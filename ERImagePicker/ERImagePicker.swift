@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import Photos
+import MobileCoreServices
 
 protocol ERImagePickerDelegate: class {
     func ERImagePickerDelegate(canUseCamera accessIsAllowed: Bool, delegatedForm: ERImagePicker)
@@ -17,15 +18,21 @@ protocol ERImagePickerDelegate: class {
     func ERImagePickerDelegate(didCancel delegatedForm: ERImagePicker)
 }
 
+let LivePhoto = kUTTypeLivePhoto as String
+let GIF = kUTTypeGIF as String
+
 class ERImagePicker: NSObject {
 
     private weak var controller: UIImagePickerController?
     weak var delegate: ERImagePickerDelegate? = nil
 
-    func present(parent viewController: UIViewController, sourceType: UIImagePickerController.SourceType) {
+    func present(parent viewController: UIViewController, sourceType: UIImagePickerController.SourceType, mediaTypes: [String]) {
         let controller = UIImagePickerController()
         controller.delegate = self
         controller.sourceType = sourceType
+        if (mediaTypes.count >= 1) {
+            controller.mediaTypes = mediaTypes
+        }
         self.controller = controller
         DispatchQueue.main.async {
             viewController.present(controller, animated: true, completion: nil)
