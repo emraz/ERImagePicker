@@ -11,82 +11,249 @@ import AVFoundation
 import Photos
 import MobileCoreServices
 
-protocol ERImagePickerDelegate: class {
-    func ERImagePickerDelegate(canUseCamera accessIsAllowed: Bool, delegatedForm: ERImagePicker)
-    func ERImagePickerDelegate(canUseGallery accessIsAllowed: Bool, delegatedForm: ERImagePicker)
-    func ERImagePickerDelegate(didSelect image: UIImage, delegatedForm: ERImagePicker)
-    func ERImagePickerDelegate(didCancel delegatedForm: ERImagePicker)
+//https://ikyle.me/blog/2020/phpickerviewcontroller
+//https://github.com/kylehowells/ikyle.me-code-examples/blob/master/Photo%20Picker%20Swift/Photo%20Picker%20Swift/ViewController.swift#L13
+//https://stackoverflow.com/questions/66729088/how-to-use-both-uiimagepickercontroller-and-phpicker-by-adding-available
+
+enum ERImagePickerType {
+    case commonCamera
+    case photoCamera
+    case videoCamera
+    case photoLibrary
+    case videoLibrary
+    case photoVideoLibrary
 }
 
-let LivePhoto = kUTTypeLivePhoto as String
-let GIF = kUTTypeGIF as String
+enum ComponentType: String {
+    case camera = "Camera"
+    case photoLibrary = "PhotoLibrary"
+}
+
+typealias CompletionWithSucess = (_ success: Bool) -> Void
+
+protocol ERImagePickerDelegate: AnyObject {
+    func ERImagePickerDelegate(didSelect image: UIImage, delegatedForm: ERImagePicker)
+    func ERImagePickerDidCancel()
+}
 
 class ERImagePicker: NSObject {
 
-    private weak var controller: UIImagePickerController?
-    weak var delegate: ERImagePickerDelegate? = nil
+    private lazy var imagePickerController =  UIImagePickerController()
+    weak var delegate: ERImagePickerDelegate?
+    private var rootViewController: UIViewController?
 
-    func present(parent viewController: UIViewController, sourceType: UIImagePickerController.SourceType, mediaTypes: [String]) {
-        let controller = UIImagePickerController()
-        controller.delegate = self
-        controller.sourceType = sourceType
-        if (mediaTypes.count >= 1) {
-            controller.mediaTypes = mediaTypes
+    func presentERImagePicker(from viewController: UIViewController, pickerType ImagePickerType: ERImagePickerType) {
+        
+        rootViewController = viewController
+                
+        switch ImagePickerType {
+        case .commonCamera:
+            showCamera()
+            break
+        case .photoCamera:
+            showPhotoCamera()
+            break
+        case .videoCamera:
+            showVideoCamera()
+            break
+        case .photoLibrary:
+            showOnlyPhotos()
+            break
+        case .videoLibrary:
+            showOnlyVideos()
+            break
+        case .photoVideoLibrary:
+            showPhotoLibrary()
+            break
         }
-        self.controller = controller
-        DispatchQueue.main.async {
-            viewController.present(controller, animated: true, completion: nil)
+    }
+    
+    private func showCamera() {
+        
+        if !isCameraAvailable() {
+            return
+        }
+        
+        cameraAsscessRequest { isAuthorized in
+            DispatchQueue.main.async {
+                if isAuthorized {
+                    self.showPicker(sourceType: .camera, mediaTypes: [kUTTypeImage as String, kUTTypeMovie as String])
+                }
+                else {
+                    self.showAlert(for: ComponentType.camera.rawValue)
+                }
+            }
+        }
+    }
+    
+    private func showPhotoCamera() {
+        
+        if !isCameraAvailable() {
+            return
+        }
+        
+        cameraAsscessRequest { isAuthorized in
+            DispatchQueue.main.async {
+                if isAuthorized {
+                    self.showPicker(sourceType: .camera, mediaTypes: [kUTTypeImage as String])
+                }
+                else {
+                    self.showAlert(for: ComponentType.camera.rawValue)
+                }
+            }
+        }
+    }
+    
+    private func showVideoCamera() {
+        
+        if !isCameraAvailable() {
+            return
+        }
+        
+        cameraAsscessRequest { isAuthorized in
+            DispatchQueue.main.async {
+                if isAuthorized {
+                    self.showPicker(sourceType: .camera, mediaTypes: [kUTTypeMovie as String])
+                }
+                else {
+                    self.showAlert(for: ComponentType.camera.rawValue)
+                }
+            }
+        }
+    }
+    
+    private func showPhotoLibrary() {
+        
+        if !isPhotoLibraryAvailable() {
+            return
+        }
+        
+        cameraAsscessRequest { isAuthorized in
+            DispatchQueue.main.async {
+                if isAuthorized {
+                    self.showPicker(sourceType: .photoLibrary, mediaTypes: [kUTTypeImage as String, kUTTypeMovie as String])
+                }
+                else {
+                    self.showAlert(for: ComponentType.camera.rawValue)
+                }
+            }
+        }
+    }
+    
+    private func showOnlyPhotos() {
+        
+        if !isPhotoLibraryAvailable() {
+            return
+        }
+        
+        cameraAsscessRequest { isAuthorized in
+            DispatchQueue.main.async {
+                if isAuthorized {
+                    self.showPicker(sourceType: .photoLibrary, mediaTypes: [kUTTypeImage as String])
+                }
+                else {
+                    self.showAlert(for: ComponentType.camera.rawValue)
+                }
+            }
+        }
+    }
+    
+    private func showOnlyVideos() {
+        
+        if !isPhotoLibraryAvailable() {
+            return
+        }
+        
+        cameraAsscessRequest { isAuthorized in
+            DispatchQueue.main.async {
+                if isAuthorized {
+                    self.showPicker(sourceType: .photoLibrary, mediaTypes: [kUTTypeMovie as String])
+                }
+                else {
+                    self.showAlert(for: ComponentType.camera.rawValue)
+                }
+            }
+        }
+    }
+    
+    private func showPicker(sourceType: UIImagePickerController.SourceType, mediaTypes: [String]) {
+        
+        imagePickerController.delegate = self
+        imagePickerController.allowsEditing = false
+        imagePickerController.sourceType = sourceType
+        imagePickerController.mediaTypes = mediaTypes
+
+        switch sourceType {
+        case .camera:
+            imagePickerController.allowsEditing = true
+            imagePickerController.videoQuality = .typeHigh
+
+        default:
+            break
+        }
+  
+        if let rVC = rootViewController {
+            imagePickerController.modalPresentationStyle = .fullScreen
+            rVC.present(imagePickerController, animated: true, completion: nil)
         }
     }
 
-    func dismiss() { controller?.dismiss(animated: true, completion: nil) }
+    func dismissPicker() {
+        imagePickerController.dismiss(animated: true, completion: nil)
+    }
 }
 
 extension ERImagePicker {
+    
+    private func isCameraAvailable() -> Bool {
+        if !UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera) {
+            ERAlertController.showAlert("Error!", message: "Device has no camera!", isCancel: false, okButtonTitle: "I Understand", cancelButtonTitle: "", completion: nil)
+            return false
+        }
+        return true
+    }
 
-    private func showAlert(targetName: String, completion: @escaping (Bool)->()) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            let alertVC = UIAlertController(title: "Access to the \(targetName)",
-                                            message: "Please provide access to your \(targetName)",
-                                            preferredStyle: .alert)
-            alertVC.addAction(UIAlertAction(title: "Settings", style: .default, handler: { action in
-                guard   let settingsUrl = URL(string: UIApplication.openSettingsURLString),
-                    UIApplication.shared.canOpenURL(settingsUrl) else { completion(false); return }
-                UIApplication.shared.open(settingsUrl, options: [:]) {
-                    [weak self] _ in self?.showAlert(targetName: targetName, completion: completion)
+    private func isPhotoLibraryAvailable() -> Bool {
+        if !UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.photoLibrary) {
+            ERAlertController.showAlert("Error!", message: "Device has no photolibrary!", isCancel: false, okButtonTitle: "I Understand", cancelButtonTitle: "", completion: nil)
+            return false
+        }
+        return true
+    }
+    
+    private func showAlert(for componentName: String) {
+        
+        ERAlertController.showAlert("Access to the \(componentName)", message: "Please provide access to your \(componentName)", isCancel: true, okButtonTitle: "Settings", cancelButtonTitle: "Cancel") { isAllow in
+            if(isAllow) {
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString),
+                    UIApplication.shared.canOpenURL(settingsUrl) else {
+                    return
                 }
-            }))
-            alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in completion(false) }))
-            UIApplication.shared.delegate?.window??.rootViewController?.present(alertVC, animated: true, completion: nil)
+                UIApplication.shared.open(settingsUrl, options: [ : ], completionHandler: nil)
+            }
         }
     }
 
-    func cameraAsscessRequest() {
+    func cameraAsscessRequest(completion: @escaping CompletionWithSucess) {
         if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized {
-            delegate?.ERImagePickerDelegate(canUseCamera: true, delegatedForm: self)
+            completion(true)
         } else {
-            AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
-                guard let self = self else { return }
+            AVCaptureDevice.requestAccess(for: .video) { granted in
                 if granted {
-                    self.delegate?.ERImagePickerDelegate(canUseCamera: granted, delegatedForm: self)
+                    completion(true)
                 } else {
-                    self.showAlert(targetName: "camera") { self.delegate?.ERImagePickerDelegate(canUseCamera: $0, delegatedForm: self) }
+                    completion(false)
                 }
             }
         }
     }
 
-    func photoGalleryAsscessRequest() {
-        PHPhotoLibrary.requestAuthorization { [weak self] result in
-            guard let self = self else { return }
+    private func photoGalleryAsscessRequest(completion: @escaping CompletionWithSucess) -> Void {
+        PHPhotoLibrary.requestAuthorization { result in
             if result == .authorized {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    self.delegate?.ERImagePickerDelegate(canUseGallery: result == .authorized, delegatedForm: self)
-                }
+                completion(true)
             } else {
-                self.showAlert(targetName: "photo gallery") { self.delegate?.ERImagePickerDelegate(canUseCamera: $0, delegatedForm: self) }
+                completion(false)
             }
         }
     }
@@ -95,6 +262,7 @@ extension ERImagePicker {
 extension ERImagePicker: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
         if let image = info[.editedImage] as? UIImage {
             delegate?.ERImagePickerDelegate(didSelect: image, delegatedForm: self)
             return
@@ -105,9 +273,22 @@ extension ERImagePicker: UIImagePickerControllerDelegate, UINavigationController
         } else {
             print("Other source")
         }
+        
+        
+        let mediaType = info[UIImagePickerController.InfoKey.mediaType] as! String
+
+        if mediaType.isEqual(kUTTypeImage as String) {
+            // Media is an image
+        }
+        else if mediaType.isEqual(kUTTypeMovie as String) {
+            // Media is a video
+        }
+        
+        dismissPicker()
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        delegate?.ERImagePickerDelegate(didCancel: self)
+        dismissPicker()
+        delegate?.ERImagePickerDidCancel()
     }
 }

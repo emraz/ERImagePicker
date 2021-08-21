@@ -60,11 +60,15 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app requires access to the photo library.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>This app require access to the microphone.</string>
     <key>NSCameraUsageDescription</key>
-    <string>This app requires access to the camera.</string>
+    <string>This app wants to take pictures and videos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app wants to use your picture and video library.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This app wants to record sound.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>This app wants to save pictures and videos to your library.</string>
 </dict>
 </plist>
+
+

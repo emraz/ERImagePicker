@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9390C6DE26CF99FF00B825A8 /* ERAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9390C6DD26CF99FF00B825A8 /* ERAlertController.swift */; };
 		9F9BC1EF24332AB0003457DE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9BC1EE24332AB0003457DE /* AppDelegate.swift */; };
 		9F9BC1F124332AB0003457DE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9BC1F024332AB0003457DE /* SceneDelegate.swift */; };
 		9F9BC1F324332AB0003457DE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9BC1F224332AB0003457DE /* ViewController.swift */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9390C6DD26CF99FF00B825A8 /* ERAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ERAlertController.swift; sourceTree = "<group>"; };
 		9F9BC1EB24332AB0003457DE /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F9BC1EE24332AB0003457DE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9F9BC1F024332AB0003457DE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -78,6 +80,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9390C6DC26CF99FF00B825A8 /* ERAlertController */ = {
+			isa = PBXGroup;
+			children = (
+				9390C6DD26CF99FF00B825A8 /* ERAlertController.swift */,
+			);
+			path = ERAlertController;
+			sourceTree = "<group>";
+		};
 		9F9BC1E224332AB0003457DE = {
 			isa = PBXGroup;
 			children = (
@@ -134,6 +144,7 @@
 		9F9BC21E24332AC7003457DE /* ERImagePicker */ = {
 			isa = PBXGroup;
 			children = (
+				9390C6DC26CF99FF00B825A8 /* ERAlertController */,
 				9F9BC21F24332AEE003457DE /* ERImagePicker.swift */,
 			);
 			name = ERImagePicker;
@@ -203,7 +214,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1130;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1250;
 				ORGANIZATIONNAME = "Matrix Solution Ltd.";
 				TargetAttributes = {
 					9F9BC1EA24332AB0003457DE = {
@@ -273,6 +284,7 @@
 			files = (
 				9F9BC1F324332AB0003457DE /* ViewController.swift in Sources */,
 				9F9BC1EF24332AB0003457DE /* AppDelegate.swift in Sources */,
+				9390C6DE26CF99FF00B825A8 /* ERAlertController.swift in Sources */,
 				9F9BC22024332AEE003457DE /* ERImagePicker.swift in Sources */,
 				9F9BC1F124332AB0003457DE /* SceneDelegate.swift in Sources */,
 			);
@@ -355,6 +367,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -415,6 +428,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -448,7 +462,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 3KG77SNJZD;
+				DEVELOPMENT_TEAM = H456FFSK68;
 				INFOPLIST_FILE = Demo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -466,7 +480,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 3KG77SNJZD;
+				DEVELOPMENT_TEAM = H456FFSK68;
 				INFOPLIST_FILE = Demo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
