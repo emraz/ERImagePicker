@@ -8,6 +8,7 @@
 
 import UIKit
 import MobileCoreServices
+import AVKit
 
 class ViewController: UIViewController {
 
@@ -45,13 +46,31 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: ERImagePickerDelegate {
-    func ERImagePickerDidCancel() {
-        // Cancel
+    func ERImagePickerDidDismiss() {
+        //Picker dismissed
     }
     
-    func ERImagePickerDelegate(didSelect image: UIImage, delegatedForm: ERImagePicker) {
-        // Done
+    func ERImagePickerDidSelect(Image selectedImage: UIImage) {
+        imageView.image = selectedImage
     }
-
+    
+    func ERImagePickerDidSelect(Video selectedVideoURL: URL) {
+        imageView.image = nil
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.playVideo(withURL: selectedVideoURL)
+        }
+    }
 }
 
+extension ViewController {
+    private func playVideo(withURL videoURL: URL) {
+        let player = AVPlayer(url: videoURL)
+        let playerViewController = AVPlayerViewController()
+        playerViewController.player = player
+        playerViewController.modalPresentationStyle = .fullScreen
+        
+        present(playerViewController, animated: true) {
+            playerViewController.player?.play()
+        }
+    }
+}
